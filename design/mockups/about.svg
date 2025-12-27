@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="3840" height="2160" viewBox="0 0 3840 2160">
+  <rect width="100%" height="100%" fill="#FBFBFA"/>
+  <!-- header strip -->
+  <g stroke="#111" stroke-width="4" fill="none">
+    <path d="M120 120 h3600" stroke-opacity="0.9"/>
+  </g>
+
+  <!-- main layout: left profile sketch, right skill panels -->
+  <g transform="translate(160,260)">
+    <rect x="0" y="0" width="1600" height="1400" rx="24" fill="#fff" stroke="#111" stroke-width="4"/>
+    <g transform="translate(80,80)">
+      <circle cx="200" cy="180" r="140" fill="#fff" stroke="#111" stroke-width="3"/>
+      <text x="380" y="150" font-size="40" font-family="serif" fill="#111">Savio Shaju</text>
+      <text x="380" y="200" font-size="22" font-family="serif" fill="#666">Computer Science Undergraduate</text>
+
+      <rect x="0" y="320" width="1480" height="48" fill="#fff" stroke="#111" stroke-opacity="0.06"/>
+
+      <!-- skill panels as sketched furniture -->
+      <g transform="translate(0,420)">
+        <g transform="translate(0,0)">
+          <rect x="0" y="0" width="440" height="260" rx="12" fill="#fff" stroke="#111" stroke-width="2"/>
+          <text x="26" y="36" font-family="serif" font-size="20" fill="#111">Frontend</text>
+          <text x="26" y="72" font-family="serif" font-size="16" fill="#444">React, Tailwind, HTML, CSS</text>
+        </g>
+
+        <g transform="translate(480,0)">
+          <rect x="0" y="0" width="440" height="260" rx="12" fill="#fff" stroke="#111" stroke-width="2"/>
+          <text x="26" y="36" font-family="serif" font-size="20" fill="#111">Backend</text>
+          <text x="26" y="72" font-family="serif" font-size="16" fill="#444">Node.js, Express, MongoDB</text>
+        </g>
+
+        <g transform="translate(960,0)">
+          <rect x="0" y="0" width="440" height="260" rx="12" fill="#fff" stroke="#111" stroke-width="2"/>
+          <text x="26" y="36" font-family="serif" font-size="20" fill="#111">AI & ML</text>
+          <text x="26" y="72" font-family="serif" font-size="16" fill="#444">PyTorch, OpenCV, YOLO</text>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>

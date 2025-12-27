@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="3840" height="2160" viewBox="0 0 3840 2160">
+  <rect width="100%" height="100%" fill="#FBFBFA"/>
+  <g stroke="#111" stroke-width="4" fill="none">
+    <path d="M120 120 h3600" stroke-opacity="0.9"/>
+  </g>
+
+  <g transform="translate(200,220)">
+    <text x="0" y="40" font-family="serif" font-size="40" fill="#111">Experience</text>
+
+    <!-- vertical timeline with sketched panels -->
+    <g transform="translate(120,120)">
+      <line x1="200" y1="0" x2="200" y2="1400" stroke="#111" stroke-width="3" stroke-opacity="0.12"/>
+
+      <g transform="translate(0,0)">
+        <circle cx="200" cy="80" r="18" fill="#fff" stroke="#111" stroke-width="3"/>
+        <rect x="260" y="28" width="980" height="120" rx="10" fill="#fff" stroke="#111" stroke-width="2"/>
+        <text x="280" y="68" font-family="serif" font-size="20" fill="#111">AI Virtual Intern — Infosys Springboard</text>
+        <text x="280" y="96" font-family="serif" font-size="16" fill="#444">Sep 2025 — Nov 2025</text>
+      </g>
+
+      <g transform="translate(0,220)">
+        <circle cx="200" cy="80" r="18" fill="#fff" stroke="#111" stroke-width="3"/>
+        <rect x="260" y="28" width="980" height="120" rx="10" fill="#fff" stroke="#111" stroke-width="2"/>
+        <text x="280" y="68" font-family="serif" font-size="20" fill="#111">Software Developer Intern — Fourve Dimension</text>
+        <text x="280" y="96" font-family="serif" font-size="16" fill="#444">Jul 2025 — Aug 2025</text>
+      </g>
+
+      <g transform="translate(0,440)">
+        <circle cx="200" cy="80" r="18" fill="#fff" stroke="#111" stroke-width="3"/>
+        <rect x="260" y="28" width="980" height="120" rx="10" fill="#fff" stroke="#111" stroke-width="2"/>
+        <text x="280" y="68" font-family="serif" font-size="20" fill="#111">Industrial Training — NEST Digital</text>
+        <text x="280" y="96" font-family="serif" font-size="16" fill="#444">Jun 2025 — Jul 2025</text>
+      </g>
+    </g>
+  </g>
+</svg>

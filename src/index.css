@@ -1,0 +1,145 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+	:root {
+		--accent: #374151;
+		--water-light: #f0f9ff;
+		--water-mid: #e0f2fe;
+	}
+
+	html {
+		scroll-behavior: smooth;
+	}
+
+	body {
+		background: linear-gradient(135deg, 
+			#f0f9ff 0%,
+			#e0f7ff 15%,
+			#faf5ff 30%,
+			#f5e6ff 45%,
+			#ffe5f0 60%,
+			#fff5e6 75%,
+			#e8f5ff 90%,
+			#f0f9ff 100%);
+		background-attachment: fixed;
+		background-size: 400% 400%;
+		animation: gradientShift 20s ease infinite;
+		min-height: 100vh;
+	}
+}
+
+@layer components {
+	.card {
+		@apply relative border border-neutral-900 bg-white p-6;
+		background: linear-gradient(135deg, #ffffff 0%, #f0f9ff 50%, #faf5ff 100%);
+		box-shadow: 3px 3px 0 rgba(17, 24, 39, 0.08), 0 1px 2px rgba(17, 24, 39, 0.04);
+	}
+
+	.card::before {
+		content: '';
+		position: absolute;
+		inset: 0;
+		border: 1px solid #111827;
+		transform: translate(1px, 1px);
+		pointer-events: none;
+	}
+
+	.card:hover {
+		background: linear-gradient(135deg, #f5f9ff 0%, #e0f7ff 50%, #f0e6ff 100%);
+		box-shadow: 5px 5px 0 rgba(17, 24, 39, 0.12), 0 4px 6px rgba(17, 24, 39, 0.08);
+		transform: translateY(-2px);
+		transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+	}
+
+	.btn {
+		@apply relative px-4 py-2 border border-neutral-900 bg-white text-neutral-900 font-normal text-sm;
+		background: linear-gradient(135deg, #ffffff 0%, #f0f9ff 100%);
+		box-shadow: 2px 2px 0 rgba(17, 24, 39, 0.06);
+		transition: all 150ms ease-out;
+	}
+
+	.btn::before {
+		content: '';
+		position: absolute;
+		inset: 0;
+		border: 1px solid #111827;
+		transform: translate(1px, 1px);
+		pointer-events: none;
+	}
+
+	.btn:hover {
+		background: linear-gradient(135deg, #f5f9ff 0%, #e0f7ff 100%);
+		box-shadow: 3px 3px 0 rgba(17, 24, 39, 0.1);
+		transform: translateY(-1px);
+	}
+
+	.btn:active {
+		box-shadow: 1px 1px 0 rgba(17, 24, 39, 0.04);
+		transform: translateY(1px);
+	}
+
+	.input {
+		@apply w-full px-4 py-2 border border-neutral-900 bg-white text-neutral-900 font-normal;
+		background: linear-gradient(135deg, #ffffff 0%, #f0f9ff 100%);
+		box-shadow: inset 1px 1px 0 rgba(17, 24, 39, 0.03);
+	}
+
+	.input:focus {
+		outline: none;
+		background: linear-gradient(135deg, #f5f9ff 0%, #e0f7ff 100%);
+		box-shadow: inset 1px 1px 0 rgba(17, 24, 39, 0.06);
+	}
+
+	.section {
+		@apply relative w-full min-h-screen bg-white border border-neutral-900 px-4 sm:px-6 py-16 md:py-24;
+		background: linear-gradient(135deg, #ffffff 0%, #f5f9ff 25%, #faf5ff 50%, #f5e6ff 75%, #ffffff 100%);
+	}
+
+	.section::before {
+		content: '';
+		position: absolute;
+		inset: 0;
+		border: 1px solid #111827;
+		transform: translate(1px, 1px);
+		pointer-events: none;
+	}
+
+	.accent-line {
+		border-left: 3px solid var(--accent);
+		padding-left: 1rem;
+	}
+
+	.accent-underline::after {
+		content: '';
+		position: absolute;
+		bottom: -4px;
+		left: 0;
+		width: 40%;
+		height: 2px;
+		background: var(--accent);
+	}
+
+	.accent-underline {
+		position: relative;
+		display: inline-block;
+	}
+}
+
+@keyframes fadeInUp {
+	from { opacity: 0; transform: translateY(10px); }
+	to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes floatSlow {
+	0% { transform: translateY(0px); }
+	50% { transform: translateY(-10px); }
+	100% { transform: translateY(0px); }
+}
+
+@keyframes gradientShift {
+	0% { background-position: 0% 50%; }
+	50% { background-position: 100% 50%; }
+	100% { background-position: 0% 50%; }
+}
