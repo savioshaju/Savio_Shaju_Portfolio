@@ -15,7 +15,7 @@ const Home = () => {
 
   return (
     <section className="relative w-full min-h-screen bg-gradient-to-br from-white via-blue-50 to-purple-50 border border-neutral-900 px-4 sm:px-6 md:px-12 lg:px-20 py-20 md:py-24 before:content-[''] before:absolute before:inset-0 before:border before:border-neutral-900 before:translate-x-[1px] before:translate-y-[1px] before:pointer-events-none">
-      <div className="absolute inset-0 z-0">
+      <div className="absolute inset-0 z-0 hidden md:block">
         <ThreeHero />
       </div>
 
