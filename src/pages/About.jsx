@@ -47,12 +47,12 @@ const About = () => {
   ];
 
   const softSkills = [
-    { name: "Problem Solving", level: 90 },
-    { name: "Adaptability", level: 95 },
-    { name: "Continuous Learning", level: 92 },
-    { name: "Time Management", level: 88 },
-    { name: "Team Collaboration", level: 85 },
-    { name: "Communication", level: 77 },
+    { name: "Problem Solving" },
+    { name: "Adaptability" },
+    { name: "Continuous Learning" },
+    { name: "Time Management" },
+    { name: "Team Collaboration" },
+    { name: "Communication" },
   ];
 
   const socialLinks = [
@@ -162,7 +162,6 @@ const About = () => {
                   className="card flex justify-between items-center p-4"
                 >
                   <span className="text-sm">{skill.name}</span>
-                  <span className="text-neutral-600">{skill.level}%</span>
                 </div>
               ))}
             </div>

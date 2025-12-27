@@ -48,8 +48,6 @@ export default function Contact() {
 
   function handleSubmit(e) {
     e.preventDefault();
-    setStatus("Sending...");
-
     emailjs
       .send(
         import.meta.env.VITE_EMAILJS_SERVICE_ID,
@@ -92,10 +90,7 @@ export default function Contact() {
 
 
           <div className="border border-neutral-900 p-6">
-            <p className="text-neutral-700 mt-3">
-              Use the form to send a message.
-            </p>
-
+          
             <div className="flex items-center gap-3 mt-6">
               <div className="p-2 border border-neutral-900">
                 <Mail className="w-5 h-5" />
