@@ -1,53 +1,87 @@
 import React, { useState, useEffect } from "react";
 import ThreeHero from "../components/ThreeHero";
-import SketchText from "../components/SketchText";
 
 const Home = () => {
-  const [currentTitle, setCurrentTitle] = useState(0);
-  const titles = ["Full-Stack Developer", "AI & ML Enthusiast", "UI/UX Designer"];
+  const [typedText, setTypedText] = useState("");
+  const titles = ["Full-Stack Developer", "AI Enthusiast", "UI/UX Designer"];
+  const [titleIndex, setTitleIndex] = useState(0);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentTitle((prev) => (prev + 1) % titles.length);
-    }, 3000);
-    return () => clearInterval(interval);
-  }, []);
+    let currentText = "";
+    let isDeleting = false;
+    let charIndex = 0;
+    let timeout;
+
+    const type = () => {
+      const fullText = titles[titleIndex];
+
+      if (isDeleting) {
+        currentText = fullText.substring(0, charIndex - 1);
+        charIndex--;
+      } else {
+        currentText = fullText.substring(0, charIndex + 1);
+        charIndex++;
+      }
+
+      setTypedText(currentText);
+
+      let typeSpeed = isDeleting ? 50 : 100;
+
+      if (!isDeleting && charIndex === fullText.length) {
+        typeSpeed = 2000; // Pause at end
+        isDeleting = true;
+      } else if (isDeleting && charIndex === 0) {
+        isDeleting = false;
+        setTitleIndex((prev) => (prev + 1) % titles.length);
+        typeSpeed = 500;
+      }
+
+      timeout = setTimeout(type, typeSpeed);
+    };
+
+    timeout = setTimeout(type, 100);
+    return () => clearTimeout(timeout);
+  }, [titleIndex]);
 
   return (
-    <section className="relative w-full min-h-screen bg-gradient-to-br from-white via-blue-50 to-purple-50 border border-neutral-900 px-4 sm:px-6 md:px-12 lg:px-20 py-20 md:py-24 before:content-[''] before:absolute before:inset-0 before:border before:border-neutral-900 before:translate-x-[1px] before:translate-y-[1px] before:pointer-events-none">
-      <div className="absolute inset-0 z-0 hidden md:block">
-        <ThreeHero />
-      </div>
+    <section id="home" className="relative w-full h-screen flex items-center pt-20 overflow-hidden">
 
-      <div className="relative z-10 w-full min-h-screen flex items-center pt-16 md:pt-0">
-        <div className="max-w-2xl space-y-8 w-full">
-          <div className="accent-line">
-            <SketchText
-              text="Savio Shaju"
-              size={window.innerWidth < 640 ? 48 : window.innerWidth < 768 ? 56 : 64}
-              weight={700}
-              color="#111827"
-            />
+    
+
+      {/* Gradient Overlay for Text Readability */}
+      <div className="absolute inset-0 bg-gradient-to-r from-[#030014] via-[#030014]/60 to-transparent z-0 pointer-events-none" />
+
+      <div className="relative z-10 max-w-7xl mx-auto px-6 w-full grid md:grid-cols-2 gap-12 items-center">
+        <div className="space-y-8">
+
+          <div className="inline-block px-3 py-1 bg-white/5 border border-white/10 rounded-full">
+            <span className="text-cyan-400 text-sm font-medium tracking-wide">Available for Work</span>
           </div>
 
-          <p className="text-xl sm:text-2xl text-neutral-700">
-            CS Undergrad | <span className="font-medium text-neutral-900">{titles[currentTitle]}</span>
+          <div className="space-y-2">
+            <h1 className="text-5xl md:text-7xl font-bold tracking-tight text-white">
+              Savio Shaju
+            </h1>
+            <h2 className="text-2xl md:text-3xl text-gray-400 font-light h-10">
+              I am a <span className="text-gradient font-medium">{typedText}</span><span className="animate-pulse">|</span>
+            </h2>
+          </div>
+
+          <p className="text-lg text-gray-400 max-w-xl leading-relaxed">
+            Building scalable applications and intelligent systems. I merge robust engineering with thoughtful design to create meaningful digital experiences.
           </p>
 
-          <p className="text-base sm:text-lg text-neutral-700 leading-relaxed max-w-xl">
-            I build scalable applications and intelligent systems that solve real-world problems across full-stack development, AI, and design.
-          </p>
-
-          <div className="flex flex-col sm:flex-row gap-3 pt-6">
-            <a href="https://drive.google.com" target="_blank" rel="noreferrer" className="btn text-center">
-              View Resume
+          <div className="flex flex-wrap gap-4">
+            <a href="#projects" className="btn-primary">
+              View Work
             </a>
-            <a href="#contact" className="btn text-center">
+            <a href="#contact" className="btn-ghost">
               Contact Me
             </a>
           </div>
         </div>
       </div>
+
     </section>
   );
 };

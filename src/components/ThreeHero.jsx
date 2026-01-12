@@ -1,138 +1,221 @@
 import * as THREE from "three";
-import { useRef, useState, useMemo } from "react";
-import { Canvas, extend, useThree, useFrame } from "@react-three/fiber";
-import { BallCollider, CuboidCollider, Physics, RigidBody, useRopeJoint, useSphericalJoint } from "@react-three/rapier";
+import { useRef, useState, useEffect, useMemo } from "react";
+import { Canvas, useFrame, useThree, extend } from "@react-three/fiber";
+import {
+  Physics,
+  RigidBody,
+  BallCollider,
+  CuboidCollider,
+  useRopeJoint,
+} from "@react-three/rapier";
+import { OrbitControls, useTexture } from "@react-three/drei";
 import { MeshLineGeometry, MeshLineMaterial } from "meshline";
-import { useTexture } from "@react-three/drei";
 
 extend({ MeshLineGeometry, MeshLineMaterial });
 
+/* =========================
+   ROOT
+========================= */
 export default function ThreeHero() {
   return (
-    <Canvas camera={{ position: [0, 0, 13], fov: 25 }} dpr={[1, 2]}>
-      <color attach="background" args={["#fbfaf8"]} />
-      <ambientLight intensity={0.9} />
-      <directionalLight position={[5, 10, 5]} intensity={0.4} />
-      <Physics gravity={[0, -35, 0]} timeStep={1 / 60} iterations={15}>
-        <Band />
+    <Canvas
+      style={{ width: "100%", height: "100%" }}
+      camera={{ position: [0, 0, 8], fov: 40 }}
+      dpr={[1, 2]}
+    >
+      <ambientLight intensity={0.7} />
+      <directionalLight position={[5, 8, 5]} intensity={1.2} />
+
+      <Physics gravity={[0, -9.5]}>
+        <HangingCard />
       </Physics>
+
+      <OrbitControls enableZoom={false} enablePan={false} />
     </Canvas>
   );
 }
 
-function Band() {
-  const band = useRef();
-  const fixed = useRef();
-  const j1 = useRef();
-  const j2 = useRef();
-  const j3 = useRef();
+/* =========================
+   HANGING SYSTEM
+========================= */
+function HangingCard() {
+  const anchor = useRef();
+  const joint1 = useRef();
+  const joint2 = useRef();
   const card = useRef();
+  const lineRef = useRef();
 
-  const vec = new THREE.Vector3();
-  const dir = new THREE.Vector3();
+  const { size } = useThree();
 
-  const { width, height } = useThree((s) => s.size);
-  const texture = useTexture("/profile.jpg");
+  const [canDrag, setCanDrag] = useState(false);
+  const [dragOffset, setDragOffset] = useState(null);
 
-  const [curve] = useState(() => new THREE.CatmullRomCurve3([
-    new THREE.Vector3(),
-    new THREE.Vector3(),
-    new THREE.Vector3(),
-    new THREE.Vector3()
-  ]));
+  useEffect(() => {
+    const t = setTimeout(() => setCanDrag(true), 1500);
+    return () => clearTimeout(t);
+  }, []);
 
-  const [dragged, drag] = useState(false);
+  // Safe initial line
+  const initialLine = useMemo(
+    () => [
+      new THREE.Vector3(0, 0, 0),
+      new THREE.Vector3(0, -0.5, 0),
+      new THREE.Vector3(0, -1, 0),
+      new THREE.Vector3(0, -1.5, 0),
+    ],
+    []
+  );
 
-  useRopeJoint(fixed, j1, [[0, 0, 0], [0, 0, 0], 1]);
-  useRopeJoint(j1, j2, [[0, 0, 0], [0, 0, 0], 1]);
-  useRopeJoint(j2, j3, [[0, 0, 0], [0, 0, 0], 1]);
-  useSphericalJoint(j3, card, [[0, 0, 0], [0, 1.45, 0]]);
+  // Rope physics
+  useRopeJoint(anchor, joint1, [[0, 0, 0], [0, 0, 0], 0.8]);
+  useRopeJoint(joint1, joint2, [[0, 0, 0], [0, 0, 0], 0.8]);
+  useRopeJoint(joint2, card, [[0, 0, 0], [0, 1.2, 0], 0.2]);
 
-  useFrame((state) => {
-    if (dragged) {
-      vec.set(state.pointer.x, state.pointer.y, 0.5).unproject(state.camera);
-      dir.copy(vec).sub(state.camera.position).normalize();
-      vec.add(dir.multiplyScalar(state.camera.position.length()));
-      [card, j1, j2, j3].forEach((r) => r.current?.wakeUp());
-      card.current?.setNextKinematicTranslation({
-        x: vec.x - dragged.x,
-        y: vec.y - dragged.y,
-        z: vec.z - dragged.z
+  useFrame(({ pointer, camera }) => {
+    /* ---------- ROPE VISUAL ---------- */
+    if (
+      !anchor.current ||
+      !joint1.current ||
+      !joint2.current ||
+      !card.current ||
+      !lineRef.current
+    )
+      return;
+
+    const p0 = anchor.current.translation();
+    const p1 = joint1.current.translation();
+    const p2 = joint2.current.translation();
+    const p3 = card.current.translation();
+
+    // 🚨 HARD NaN GUARD
+    if (
+      !Number.isFinite(p0.x) ||
+      !Number.isFinite(p1.x) ||
+      !Number.isFinite(p2.x) ||
+      !Number.isFinite(p3.x)
+    )
+      return;
+
+    const cardTop = new THREE.Vector3(p3.x, p3.y + 1.2, p3.z);
+
+    const points = [
+      new THREE.Vector3(p0.x, p0.y, p0.z),
+      new THREE.Vector3(p1.x, p1.y, p1.z),
+      new THREE.Vector3(p2.x, p2.y, p2.z),
+      cardTop,
+    ];
+
+    lineRef.current.geometry.setPoints(points);
+
+    /* ---------- DRAG ---------- */
+    if (dragOffset && canDrag) {
+      const vec = new THREE.Vector3(pointer.x, pointer.y, 0.5).unproject(camera);
+      const dir = vec.sub(camera.position).normalize();
+      const pos = camera.position.clone().add(dir.multiplyScalar(8));
+
+      card.current.setNextKinematicTranslation({
+        x: pos.x - dragOffset.x,
+        y: pos.y - dragOffset.y,
+        z: 0,
       });
-    }
-    if (fixed.current) {
-      curve.points[0].copy(j3.current.translation());
-      curve.points[1].copy(j2.current.translation());
-      curve.points[2].copy(j1.current.translation());
-      curve.points[3].copy(fixed.current.translation());
-      band.current.geometry.setPoints(curve.getPoints(32));
+
+      // Keep upright
+      card.current.setNextKinematicRotation(new THREE.Quaternion());
     }
   });
 
   return (
+    <group position={[0, 2.5, 0]}>
+      {/* VISUAL ROPE */}
+      <mesh ref={lineRef}>
+        <meshLineGeometry points={initialLine} />
+        <meshLineMaterial
+          color="#22d3ee"
+          lineWidth={0.15}
+          resolution={[size.width, size.height]}
+        />
+      </mesh>
+
+      {/* FIXED ANCHOR */}
+      <RigidBody ref={anchor} type="fixed" />
+
+      {/* JOINTS */}
+      <RigidBody ref={joint1} position={[0, -0.8, 0]} linearDamping={3} colliders={false}>
+        <BallCollider args={[0.05]} />
+      </RigidBody>
+
+      <RigidBody ref={joint2} position={[0, -1.6, 0]} linearDamping={3} colliders={false}>
+        <BallCollider args={[0.05]} />
+      </RigidBody>
+
+      {/* CARD */}
+      <RigidBody
+        ref={card}
+        position={[0, -3, 0]}
+        linearDamping={2.5}
+        angularDamping={2.5}
+        type={dragOffset ? "kinematicPosition" : "dynamic"}
+      >
+        <CuboidCollider args={[0.9, 1.3, 0.05]} />
+
+        <group
+          onPointerDown={(e) => {
+            if (!canDrag) return;
+            e.stopPropagation();
+            const p = card.current.translation();
+            setDragOffset(new THREE.Vector3(e.point.x - p.x, e.point.y - p.y, 0));
+          }}
+          onPointerUp={() => setDragOffset(null)}
+        >
+          <IDCard />
+        </group>
+      </RigidBody>
+    </group>
+  );
+}
+
+/* =========================
+   ID CARD
+========================= */
+function IDCard() {
+  const photo = useTexture("/profile.jpg");
+
+  return (
     <>
-      <group position={[3, 4, 0]}>
-        <RigidBody ref={fixed} type="fixed" />
-        {[j1, j2, j3].map((ref, i) => (
-          <RigidBody key={i} ref={ref} position={[0.5 * (i + 1), 0, 0]} linearDamping={0.6} angularDamping={0.95}>
-            <BallCollider args={[0.1]} />
-          </RigidBody>
-        ))}
-        <RigidBody ref={card} position={[2, 0, 0]} linearDamping={0.6} angularDamping={0.95} type={dragged ? "kinematicPosition" : "dynamic"}>
-          <CuboidCollider args={[0.8, 1.125, 0.02]} />
-          <group onPointerDown={(e) => drag(new THREE.Vector3().copy(e.point).sub(vec.copy(card.current.translation())))} onPointerUp={() => drag(false)}>
-            <CardFront texture={texture} />
-            <CardBack />
-            <CardSketchFrame />
-          </group>
-        </RigidBody>
-      </group>
-      <mesh ref={band}>
-        <meshLineGeometry />
-        <meshLineMaterial transparent opacity={0.6} color="#111827" resolution={[width, height]} lineWidth={1} />
+      <mesh position={[0, 0, 0.01]}>
+        <planeGeometry args={[1.8, 2.6]} />
+        <meshStandardMaterial color="#020617" />
+      </mesh>
+
+      <mesh position={[-0.45, 0.7, 0.02]}>
+        <planeGeometry args={[0.7, 0.9]} />
+        <meshStandardMaterial map={photo} />
+      </mesh>
+
+      <mesh position={[-0.45, 0.7, 0.03]}>
+        <planeGeometry args={[0.74, 0.94]} />
+        <meshStandardMaterial color="#22d3ee" transparent opacity={0.25} />
+      </mesh>
+
+      <Bar x={0.35} y={0.8} w={0.7} />
+      <Bar x={0.35} y={0.55} w={0.55} />
+      <Bar x={0} y={0.15} w={1.4} />
+      <Bar x={0} y={-0.1} w={1.4} />
+      <Bar x={0} y={-0.35} w={1.4} />
+
+      <mesh position={[0, -1.05, 0.02]}>
+        <planeGeometry args={[1.8, 0.25]} />
+        <meshStandardMaterial color="#22d3ee" transparent opacity={0.3} />
       </mesh>
     </>
   );
 }
 
-function CardFront({ texture }) {
+function Bar({ x, y, w }) {
   return (
-    <mesh position={[0, 0, 0.021]}>
-      <planeGeometry args={[1.6, 2.25]} />
-      <meshBasicMaterial map={texture} />
+    <mesh position={[x, y, 0.02]}>
+      <planeGeometry args={[w, 0.1]} />
+      <meshStandardMaterial color="#0b132b" />
     </mesh>
-  );
-}
-
-function CardBack() {
-  return (
-    <mesh position={[0, 0, -0.021]} rotation={[0, Math.PI, 0]}>
-      <planeGeometry args={[1.6, 2.25]} />
-      <meshBasicMaterial color="#fbfaf8" />
-    </mesh>
-  );
-}
-
-function CardSketchFrame() {
-  const material = useMemo(() => new THREE.MeshBasicMaterial({ color: "#111827" }), []);
-  const w = 1.6;
-  const h = 2.25;
-  const t = 0.04;
-
-  return (
-    <>
-      <mesh position={[0, h / 2 + t / 2, 0]} material={material}>
-        <boxGeometry args={[w + t * 2, t, t]} />
-      </mesh>
-      <mesh position={[0, -h / 2 - t / 2, 0]} material={material}>
-        <boxGeometry args={[w + t * 2, t, t]} />
-      </mesh>
-      <mesh position={[-w / 2 - t / 2, 0, 0]} material={material}>
-        <boxGeometry args={[t, h + t * 2, t]} />
-      </mesh>
-      <mesh position={[w / 2 + t / 2, 0, 0]} material={material}>
-        <boxGeometry args={[t, h + t * 2, t]} />
-      </mesh>
-    </>
   );
 }

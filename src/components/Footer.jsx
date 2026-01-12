@@ -1,20 +1,19 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
 
 const Footer = () => {
     return (
-        <footer className="px-4 py-6 text-neutral-700 bg-white border border-neutral-900 flex flex-col items-center gap-3 relative before:content-[''] before:absolute before:inset-0 before:border before:border-neutral-900 before:translate-x-[1px] before:translate-y-[1px] before:pointer-events-none">
-            <p className="text-xs sm:text-sm text-center text-neutral-700">
-                © {new Date().getFullYear()} — All rights reserved by{' '}
-                <a
-                    href="https://www.linkedin.com/in/savio-shaju-81058528a/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="font-normal text-neutral-900 hover:underline transition"
-                >
-                    Savio Shaju
-                </a>
-            </p>
+        <footer className="relative py-12 px-6 overflow-hidden">
+            <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-violet-500/50 to-transparent" />
+            <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+                <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                    <span className="font-mono text-xs text-gray-500 tracking-widest">SYSTEM_STATUS: ONLINE</span>
+                </div>
+
+                <p className="font-mono text-xs text-gray-600">
+                    DESIGNED_BY <span className="text-white hover:text-blue-400 transition-colors cursor-pointer">SAVIO SHAJU</span> // {new Date().getFullYear()}
+                </p>
+            </div>
         </footer>
     )
 }
